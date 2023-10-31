@@ -1,17 +1,34 @@
-package com.beyonnex.utils;
+package com.beyonnex.anagramanalyzer;
 
-import com.beyonnex.analyzer.AnagramAnalyzer;
+import com.beyonnex.anagramanalyzer.manager.AnagramAnalyzerManager;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-import static com.beyonnex.constants.AnagramAnalyzerConstants.*;
+class AnagramAnalyzerAppUtils {
 
-public class AnagramAnalyzerUtils {
+    private static final AnagramAnalyzerManager manager = new AnagramAnalyzerManager();
 
-    private static final AnagramAnalyzer anagramAnalyzer = new AnagramAnalyzer();
+    //messages for the CLI
+    static final String WELCOME_CLI_TEXT =
+            "   _   _   _   _   _   _   _     _   _     _   _   _     _   _   _   _   _   _   _     _   _   _   _   _   _   _   _  \n" +
+                    "  / \\ / \\ / \\ / \\ / \\ / \\ / \\   / \\ / \\   / \\ / \\ / \\   / \\ / \\ / \\ / \\ / \\ / \\ / \\   / \\ / \\ / \\ / \\ / \\ / \\ / \\ / \\ \n" +
+                    " ( w | e | l | c | o | m | e ) ( t | o ) ( t | h | e ) ( a | n | a | g | r | a | m ) ( a | n | a | l | y | z | e | r )\n" +
+                    "  \\_/ \\_/ \\_/ \\_/ \\_/ \\_/ \\_/   \\_/ \\_/   \\_/ \\_/ \\_/   \\_/ \\_/ \\_/ \\_/ \\_/ \\_/ \\_/   \\_/ \\_/ \\_/ \\_/ \\_/ \\_/ \\_/ \\_/ \n\n";
+
+    static final String GOODBYE_CLI_TEXT =
+            "\n   _   _   _   _   _   _     _   _   _     _   _   _   _   _     _   _   _   _   _   _   _   _   _   _     _   _   _   _   _   _   _   _  \n" +
+                    "  / \\ / \\ / \\ / \\ / \\ / \\   / \\ / \\ / \\   / \\ / \\ / \\ / \\ / \\   / \\ / \\ / \\ / \\ / \\ / \\ / \\ / \\ / \\ / \\   / \\ / \\ / \\ / \\ / \\ / \\ / \\ / \\ \n" +
+                    " ( T | h | a | n | k | s ) ( f | o | r ) ( u | s | i | n | g ) ( t | h | e | a | n | a | g | r | a | m ) ( a | n | a | l | y | z | e | r )\n" +
+                    "  \\_/ \\_/ \\_/ \\_/ \\_/ \\_/   \\_/ \\_/ \\_/   \\_/ \\_/ \\_/ \\_/ \\_/   \\_/ \\_/ \\_/ \\_/ \\_/ \\_/ \\_/ \\_/ \\_/ \\_/   \\_/ \\_/ \\_/ \\_/ \\_/ \\_/ \\_/ \\_/  \n";
+
+    //Clear CLI constant value
+    static final String CLEAR_SCREEN_CONSTANT = "\033\143";
+
+    //windows constant
+    static final String WINDOWS = "WINDOWS";
 
     /*
         This method is the one that basically shows in the CLI
@@ -19,19 +36,20 @@ public class AnagramAnalyzerUtils {
      */
     public static void showOptions() {
         System.out.println("1: Analyze if two words are an anagram");
-        System.out.println("2: Historical anagrams");
+        System.out.println("2: Historical anagrams - Retrieve all the previous insterted anagrams by word");
         System.out.println("3: Clear the screen");
         System.out.println("4: Exit from the program");
 
         try {
             Scanner scanner = new Scanner(System.in);
-            int choosedOption = scanner.nextInt();
+            var choosedOption = scanner.nextInt();
             switch (choosedOption) {
                 case 1:
                     insertWordsOption(scanner);
                     showOptions();
                     break;
                 case 2:
+                    insertWordOptionForHistoricalWordsAsAnagramAndShowResult(scanner);
                     showOptions();
                     break;
                 case 3:
@@ -59,15 +77,33 @@ public class AnagramAnalyzerUtils {
      */
     private static void insertWordsOption(Scanner scanner) {
         printWordChooseMessage("first");
-        String word1 = scanner.next();
+        var word1 = scanner.next();
         printWordChooseMessage("second");
-        String word2 = scanner.next();
+        var word2 = scanner.next();
         if (StringUtils.isEmpty(word1) || StringUtils.isEmpty(word2)) {
             System.out.println(String.format("Please insert two not empty words : word1: %s word2: %s", word1, word2));
             showOptions();
         } else {
             //calculate the result
             getResultAndShowInCLI(word1, word2);
+        }
+    }
+
+    /*
+       This method receive in input a word,
+       and retrieve from the memory the list of anagrams based on this word
+     */
+    private static void insertWordOptionForHistoricalWordsAsAnagramAndShowResult(Scanner scanner) {
+        printWordChooseMessage("choosed");
+        var word = scanner.next();
+        if (StringUtils.isEmpty(word)) {
+            System.out.println(String.format("Please insert a word"));
+            showOptions();
+        } else {
+            var result = manager.getHistoricalAnagramsByWord(word);
+            System.out.println(String.format("*************************************" +
+                            " \n The list of the historical Anagrams for the word %s is %s\n************************************",
+                    word, StringUtils.join(result)));
         }
     }
 
@@ -88,13 +124,9 @@ public class AnagramAnalyzerUtils {
 
       Otherwise, print that the two words are not an anagram
      */
-
-
     private static void getResultAndShowInCLI(String word1, String word2) {
-        boolean isAnagram = anagramAnalyzer.wordsAreAnagram(word1, word2);
-        if (isAnagram) {
-            //TODO SAVE the words in memory
-        }
+
+        var isAnagram = manager.checkIfWordsAreAnagramAndStoreResultInMemory(word1, word2);
 
         System.out.println(String.format("*************************************" +
                         " \n RESULT : %s IS %s ANAGRAM OF %s \n************************************",
