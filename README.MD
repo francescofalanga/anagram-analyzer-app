@@ -27,7 +27,7 @@ with the command
 ```
 java -jar anagram-analyzer-app-{version}.jar
 ```
-An example :
+An example :<br/>
 ![img.png](src/main/resources/images/img.png)
 
 ### 3. Run from the IDE
@@ -92,7 +92,7 @@ the result of the anagram comparison
 
 ### 2.Historical anagrams - Retrieve all the previous insterted anagrams by word
 This option will allow the user to insert a word and receive back the list
-of all the historical anagrams present in the system based on the selected word
+of all the historical anagrams present in the system based on the selected word <br/>
 ![img_4.png](src/main/resources/images/img_4.png)
 
 ### 3. Clear the screen
@@ -102,7 +102,7 @@ This option will clear the screen
 This option will end the application execution
 
 ## License
-"This project is licensed under the terms of the **MIT** license
+"This project is licensed under the terms of the **MIT** license.<br/>
 The code in this repository is covered by the included license.
 
 ## Support
