@@ -1,4 +1,4 @@
-#Anagram Analyzer App
+# Anagram Analyzer App
 
 This application is a simple Java application that allows the user to detect if two words are an anagram.
 In addition, the application internally manage the historical anagrams previously detected by the application itself
